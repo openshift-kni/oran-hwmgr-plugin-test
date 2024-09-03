@@ -1,0 +1,11 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+component: "Telco"
+subcomponent: "O-RAN HwMgr Test Plugin"
+
+filters:
+  ".*":
+    reviewers:
+      - oran-hwmgr-plugin-test-reviewers
+    approvers:
+      - oran-hwmgr-plugin-test-approvers
