@@ -1,0 +1,11 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+aliases:
+  oran-hwmgr-plugin-test-reviewers:
+    - donpenney
+    - browsell
+    - tliu2021
+  oran-hwmgr-plugin-test-approvers:
+    - donpenney
+    - browsell
+    - tliu2021
