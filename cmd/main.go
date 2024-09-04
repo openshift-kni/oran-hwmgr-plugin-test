@@ -36,6 +36,8 @@ import (
 
 	hardwaremanagementcontroller "github.com/openshift-kni/oran-hwmgr-plugin-test/internal/controller/hardwaremanagement"
 	//+kubebuilder:scaffold:imports
+
+	hwmgmtv1alpha1 "github.com/openshift-kni/oran-o2ims/api/hardwaremanagement/v1alpha1"
 )
 
 var (
@@ -45,6 +47,7 @@ var (
 
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+	hwmgmtv1alpha1.AddToScheme(scheme)
 
 	//+kubebuilder:scaffold:scheme
 }
