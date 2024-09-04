@@ -30,7 +30,8 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
 # oran.openshift.io/oran-hwmgr-plugin-test-bundle:$VERSION and oran.openshift.io/oran-hwmgr-plugin-test-catalog:$VERSION.
 IMAGE_NAME ?= oran-hwmgr-plugin-test
-IMAGE_TAG_BASE ?= quay.io/dpenney/$(IMAGE_NAME)
+REPO_OWNER ?= openshift-kni
+IMAGE_TAG_BASE ?= quay.io/$(REPO_OWNER)/$(IMAGE_NAME)
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
@@ -123,9 +124,20 @@ test: manifests generate fmt vet envtest ## Run tests.
 test-e2e:
 	go test ./test/e2e/ -v -ginkgo.v
 	
+.PHONY: deps-update
+deps-update:	controller-gen kustomize
+	go mod tidy
+
 .PHONY: lint
 lint:
 	hack/golangci-lint.sh
+
+.PHONY: bundle-check
+bundle-check: bundle
+	hack/check-git-tree.sh
+
+.PHONY: ci-job
+ci-job: deps-update generate fmt vet lint test bundle-check
 
 ##@ Build
 
@@ -227,19 +239,18 @@ $(ENVTEST): $(LOCALBIN)
 
 .PHONY: operator-sdk
 OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
+OPERATOR_SDK_VERSION_INSTALLED = $(shell $(OPERATOR_SDK) version 2>/dev/null | sed 's/^operator-sdk version: "\([^"]*\).*/\1/')
 operator-sdk: ## Download operator-sdk locally if necessary.
-ifeq (,$(wildcard $(OPERATOR_SDK)))
-ifeq (, $(shell which operator-sdk 2>/dev/null))
+ifneq ($(OPERATOR_SDK_VERSION),$(OPERATOR_SDK_VERSION_INSTALLED))
+	@echo "Previously installed operator-sdk: $(OPERATOR_SDK_VERSION_INSTALLED)"
+	@echo "Downloading operator-sdk $(OPERATOR_SDK_VERSION)"
 	@{ \
-	set -e ;\
-	mkdir -p $(dir $(OPERATOR_SDK)) ;\
-	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
-	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$${OS}_$${ARCH} ;\
-	chmod +x $(OPERATOR_SDK) ;\
+		set -e ;\
+		mkdir -p $(dir $(OPERATOR_SDK)) ;\
+		OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
+		curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$${OS}_$${ARCH} ;\
+		chmod +x $(OPERATOR_SDK) ;\
 	}
-else
-OPERATOR_SDK = $(shell which operator-sdk)
-endif
 endif
 
 .PHONY: bundle
@@ -248,6 +259,7 @@ bundle: manifests kustomize operator-sdk ## Generate bundle manifests and metada
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
 	$(OPERATOR_SDK) bundle validate ./bundle
+	sed -i '/^[[:space:]]*createdAt:/d' bundle/manifests/oran-hwmgr-plugin-test.clusterserviceversion.yaml
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.

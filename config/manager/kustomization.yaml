@@ -4,5 +4,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: quay.io/dpenney/oran-hwmgr-plugin-test
-  newTag: latest
+  newName: quay.io/openshift-kni/oran-hwmgr-plugin-test
+  newTag: 0.0.1
