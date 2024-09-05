@@ -18,6 +18,7 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+// Struct definitions for the nodelist configmap
 type cmNodeInfo struct {
 	HwProfile      string              `json:"hwprofile" yaml:"hwprofile"`
 	BMC            *hwmgmtv1alpha1.BMC `json:"bmc,omitempty"`
@@ -45,47 +46,19 @@ const (
 	cmName         = "nodelist"
 )
 
-func getFreeNodesInProfile(resources cmResources, allocations cmAllocations, profname string) (freenodes []string) {
-	inuse := make(map[string]bool)
-	for _, cloud := range allocations.Clouds {
-		for groupname := range cloud.Nodegroups {
-			for _, nodename := range cloud.Nodegroups[groupname] {
-				inuse[nodename] = true
-			}
-		}
-	}
-
-	for nodename, node := range resources.Nodes {
-		if node.HwProfile != profname {
-			continue
-		}
-
-		if _, used := inuse[nodename]; !used {
-			freenodes = append(freenodes, nodename)
-		}
-	}
-
-	return
-}
-
-/////////////
-
+// Define the HwMgrService structures
 type HwMgrServiceBuilder struct {
 	client.Client
 	logger *slog.Logger
 }
 
-type nodelist map[string]hwmgmtv1alpha1.Node
-type cloudNodes map[string]nodelist
-
 type HwMgrService struct {
 	client.Client
 	logger    *slog.Logger
 	namespace string
-
-	nodes cloudNodes
 }
 
+// Functions for creating a new HwMgrService
 func NewHwMgrService() *HwMgrServiceBuilder {
 	return &HwMgrServiceBuilder{}
 }
@@ -113,13 +86,37 @@ func (b *HwMgrServiceBuilder) Build(ctx context.Context) (
 		Client:    b.Client,
 		logger:    b.logger,
 		namespace: os.Getenv("MY_POD_NAMESPACE"),
-		nodes:     make(cloudNodes),
 	}
 
 	result = service
 	return
 }
 
+// getFreeNodesInProfile compares the parsed configmap data to get the list of free nodes for a given hardware profile
+func getFreeNodesInProfile(resources cmResources, allocations cmAllocations, profname string) (freenodes []string) {
+	inuse := make(map[string]bool)
+	for _, cloud := range allocations.Clouds {
+		for groupname := range cloud.Nodegroups {
+			for _, nodename := range cloud.Nodegroups[groupname] {
+				inuse[nodename] = true
+			}
+		}
+	}
+
+	for nodename, node := range resources.Nodes {
+		if node.HwProfile != profname {
+			continue
+		}
+
+		if _, used := inuse[nodename]; !used {
+			freenodes = append(freenodes, nodename)
+		}
+	}
+
+	return
+}
+
+// GetCurrentResources parses the nodelist configmap to get the current available and allocated resource lists
 func (h *HwMgrService) GetCurrentResources(ctx context.Context) (
 	cm *corev1.ConfigMap, resources cmResources, allocations cmAllocations, err error) {
 	cm, err = utils.GetConfigmap(ctx, h.Client, cmName, h.namespace)
@@ -144,10 +141,11 @@ func (h *HwMgrService) GetCurrentResources(ctx context.Context) (
 	return
 }
 
-func (h *HwMgrService) CreateNodePool(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) error {
+// ProcessNewNodePool processes a new NodePool CR, verifying that there are enough free resources to satisfy the request
+func (h *HwMgrService) ProcessNewNodePool(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) error {
 	cloudID := nodepool.Spec.CloudID
 
-	h.logger.InfoContext(ctx, "Processing CreateNodePool request:",
+	h.logger.InfoContext(ctx, "Processing ProcessNewNodePool request:",
 		"cloudID", cloudID,
 	)
 
@@ -166,6 +164,7 @@ func (h *HwMgrService) CreateNodePool(ctx context.Context, nodepool *hwmgmtv1alp
 	return nil
 }
 
+// AllocateNode processes a NodePool CR, allocating a free node for each specified nodegroup as needed
 func (h *HwMgrService) AllocateNode(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) error {
 	cloudID := nodepool.Spec.CloudID
 
@@ -237,6 +236,7 @@ func (h *HwMgrService) AllocateNode(ctx context.Context, nodepool *hwmgmtv1alpha
 	return nil
 }
 
+// CreateNode creates a Node CR with specified attributes
 func (h *HwMgrService) CreateNode(ctx context.Context, cloudID, nodename, groupname, hwprofile string) error {
 
 	h.logger.InfoContext(ctx, "Creating node:",
@@ -264,6 +264,7 @@ func (h *HwMgrService) CreateNode(ctx context.Context, cloudID, nodename, groupn
 	return nil
 }
 
+// UpdateNodeStatus updates a Node CR status field with additional node information from the nodelist configmap
 func (h *HwMgrService) UpdateNodeStatus(ctx context.Context, nodename string, info cmNodeInfo) error {
 
 	h.logger.InfoContext(ctx, "Updating node:",
@@ -294,6 +295,7 @@ func (h *HwMgrService) UpdateNodeStatus(ctx context.Context, nodename string, in
 	return nil
 }
 
+// DeleteNode deletes a Node CR
 func (h *HwMgrService) DeleteNode(ctx context.Context, nodename string) error {
 
 	h.logger.InfoContext(ctx, "Deleting node:",
@@ -314,6 +316,7 @@ func (h *HwMgrService) DeleteNode(ctx context.Context, nodename string) error {
 	return nil
 }
 
+// IsNodeFullyAllocated checks to see if a NodePool CR has been fully allocated
 func (h *HwMgrService) IsNodeFullyAllocated(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) (bool, error) {
 	cloudID := nodepool.Spec.CloudID
 
@@ -356,6 +359,7 @@ func (h *HwMgrService) IsNodeFullyAllocated(ctx context.Context, nodepool *hwmgm
 	return true, nil
 }
 
+// GetAllocatedNodes gets a list of nodes allocated for the specified NodePool CR
 func (h *HwMgrService) GetAllocatedNodes(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) (allocatedNodes []string, err error) {
 	cloudID := nodepool.Spec.CloudID
 
@@ -386,6 +390,7 @@ func (h *HwMgrService) GetAllocatedNodes(ctx context.Context, nodepool *hwmgmtv1
 	return
 }
 
+// CheckNodePoolProgress checks to see if a NodePool is fully allocated, allocating additional resources as needed
 func (h *HwMgrService) CheckNodePoolProgress(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) (full bool, err error) {
 	cloudID := nodepool.Spec.CloudID
 
@@ -412,6 +417,7 @@ func (h *HwMgrService) CheckNodePoolProgress(ctx context.Context, nodepool *hwmg
 	return
 }
 
+// ReleaseNodePool frees resources allocated to a NodePool
 func (h *HwMgrService) ReleaseNodePool(ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) error {
 	cloudID := nodepool.Spec.CloudID
 

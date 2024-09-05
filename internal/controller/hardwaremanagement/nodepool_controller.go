@@ -96,8 +96,7 @@ func (r *NodePoolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (r
 	nodepool := &hwmgmtv1alpha1.NodePool{}
 	if err = r.Client.Get(ctx, req.NamespacedName, nodepool); err != nil {
 		if errors.IsNotFound(err) {
-			// The NodePool could have been deleted
-			r.Logger.ErrorContext(ctx, "NodePool not found... deleted? "+req.Name)
+			// The NodePool has likely been deleted
 			err = nil
 			return
 		}
@@ -167,7 +166,7 @@ func (r *NodePoolReconciler) determineAction(ctx context.Context, nodepool *hwmg
 
 func (r *NodePoolReconciler) handleNodePoolCreate(
 	ctx context.Context, nodepool *hwmgmtv1alpha1.NodePool) (ctrl.Result, error) {
-	if err := r.hwmgr.CreateNodePool(ctx, nodepool); err != nil {
+	if err := r.hwmgr.ProcessNewNodePool(ctx, nodepool); err != nil {
 		r.Logger.Error("failed createNodePool", "err", err)
 		utils.SetStatusCondition(&nodepool.Status.Conditions,
 			hwmgmtv1alpha1.Provisioned,

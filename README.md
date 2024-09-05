@@ -40,6 +40,12 @@ $ make REPO_OWNER=$USER VERSION=latest docker-build docker-push
 $ make REPO_OWNER=$USER VERSION=latest deploy
 ```
 
+To watch the Test Plugin logs, run the following command:
+
+```console
+oc logs -n oran-hwmgr-plugin-test -l control-plane=controller-manager -f
+```
+
 The [configmap/generator.sh](configmap/generator.sh) script can be used to generate a `nodelist` configmap with
 user-defined hardware profiles and any number of nodes.
 
