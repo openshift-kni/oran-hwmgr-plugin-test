@@ -117,6 +117,7 @@ vet: ## Run go vet against code.
 
 .PHONY: test
 test: manifests generate fmt vet envtest ## Run tests.
+	@chmod -R u+w $(LOCALBIN)
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test $$(go list ./... | grep -v /e2e) -coverprofile cover.out
 
 # Utilize Kind or modify the e2e tests to load the image locally, enabling compatibility with other vendors.
@@ -127,6 +128,7 @@ test-e2e:
 .PHONY: deps-update
 deps-update:	controller-gen kustomize
 	go mod tidy
+	go mod vendor
 
 .PHONY: lint
 lint:
