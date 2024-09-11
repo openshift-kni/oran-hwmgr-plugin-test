@@ -1,0 +1,44 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: oran-hwmgr-plugin-test.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions: {}
+  description: Test Hardware Manager Plugin for O-Cloud Manager
+  displayName: Test Hardware Manager Plugin for O-Cloud Manager
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - ORAN
+  - O2IMS
+  - test-plugin
+  links:
+  - name: Oran Hwmgr Plugin Test
+    url: https://oran-hwmgr-plugin-test.domain
+  maintainers:
+  - email: dpenney@redhat.com
+    name: Don Penney
+  maturity: alpha
+  minKubeVersion: 1.28.0
+  provider:
+    name: Red Hat
+  version: 0.0.0
