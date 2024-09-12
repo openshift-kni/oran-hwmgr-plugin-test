@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -19,11 +20,17 @@ import (
 )
 
 // Struct definitions for the nodelist configmap
+type cmBmcInfo struct {
+	Address        string `json:"address,omitempty"`
+	UsernameBase64 string `json:"username-base64,omitempty"`
+	PasswordBase64 string `json:"password-base64,omitempty"`
+}
+
 type cmNodeInfo struct {
-	HwProfile      string              `json:"hwprofile" yaml:"hwprofile"`
-	BMC            *hwmgmtv1alpha1.BMC `json:"bmc,omitempty"`
-	BootMACAddress string              `json:"bootMACAddress,omitempty"`
-	Hostname       string              `json:"hostname,omitempty"`
+	HwProfile      string     `json:"hwprofile" yaml:"hwprofile"`
+	BMC            *cmBmcInfo `json:"bmc,omitempty"`
+	BootMACAddress string     `json:"bootMACAddress,omitempty"`
+	Hostname       string     `json:"hostname,omitempty"`
 }
 
 type cmResources struct {
@@ -212,6 +219,10 @@ func (h *HwMgrService) AllocateNode(ctx context.Context, nodepool *hwmgmtv1alpha
 			return fmt.Errorf("unable to find nodeinfo for %s", nodename)
 		}
 
+		if err := h.CreateBMCSecret(ctx, nodename, nodeinfo.BMC.UsernameBase64, nodeinfo.BMC.PasswordBase64); err != nil {
+			return fmt.Errorf("failed to create bmc-secret when allocating node %s: %w", nodename, err)
+		}
+
 		cloud.Nodegroups[nodegroup.Name] = append(cloud.Nodegroups[nodegroup.Name], nodename)
 
 		// Update the configmap
@@ -231,6 +242,64 @@ func (h *HwMgrService) AllocateNode(ctx context.Context, nodepool *hwmgmtv1alpha
 		if err := h.UpdateNodeStatus(ctx, nodename, nodeinfo); err != nil {
 			return fmt.Errorf("failed to update node status (%s): %w", nodename, err)
 		}
+	}
+
+	return nil
+}
+
+func bmcSecretName(nodename string) string {
+	return fmt.Sprintf("%s-bmc-secret", nodename)
+}
+
+// CreateBMCSecret creates the bmc-secret for a node
+func (h *HwMgrService) CreateBMCSecret(ctx context.Context, nodename, usernameBase64, passwordBase64 string) error {
+	h.logger.InfoContext(ctx, "Creating bmc-secret:", "nodename", nodename)
+
+	secretName := bmcSecretName(nodename)
+
+	username, err := base64.StdEncoding.DecodeString(usernameBase64)
+	if err != nil {
+		return fmt.Errorf("failed to decode usernameBase64 string (%s) for node %s: %w", usernameBase64, nodename, err)
+	}
+
+	password, err := base64.StdEncoding.DecodeString(passwordBase64)
+	if err != nil {
+		return fmt.Errorf("failed to decode usernameBase64 string (%s) for node %s: %w", passwordBase64, nodename, err)
+	}
+
+	bmcSecret := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      secretName,
+			Namespace: h.namespace,
+		},
+		Data: map[string][]byte{
+			"username": username,
+			"password": password,
+		},
+	}
+
+	if err = utils.CreateK8sCR(ctx, h.Client, bmcSecret, nil, utils.UPDATE); err != nil {
+		return fmt.Errorf("failed to create bmc-secret for node %s: %w", nodename, err)
+	}
+
+	return nil
+}
+
+// DeleteBMCSecret deletes the bmc-secret for a node
+func (h *HwMgrService) DeleteBMCSecret(ctx context.Context, nodename string) error {
+	h.logger.InfoContext(ctx, "Deleting bmc-secret:", "nodename", nodename)
+
+	secretName := bmcSecretName(nodename)
+
+	bmcSecret := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      secretName,
+			Namespace: h.namespace,
+		},
+	}
+
+	if err := h.Client.Delete(ctx, bmcSecret); client.IgnoreNotFound(err) != nil {
+		return fmt.Errorf("failed to delete bmc-secret for node %s: %w", nodename, err)
 	}
 
 	return nil
@@ -278,7 +347,10 @@ func (h *HwMgrService) UpdateNodeStatus(ctx context.Context, nodename string, in
 	}
 
 	h.logger.InfoContext(ctx, "Adding info to node", "nodename", nodename, "info", info)
-	node.Status.BMC = info.BMC
+	node.Status.BMC = &hwmgmtv1alpha1.BMC{
+		Address:         info.BMC.Address,
+		CredentialsName: bmcSecretName(nodename),
+	}
 	node.Status.BootMACAddress = info.BootMACAddress
 	node.Status.Hostname = info.Hostname
 
@@ -309,7 +381,7 @@ func (h *HwMgrService) DeleteNode(ctx context.Context, nodename string) error {
 		},
 	}
 
-	if err := h.Client.Delete(ctx, node); err != nil {
+	if err := h.Client.Delete(ctx, node); client.IgnoreNotFound(err) != nil {
 		return fmt.Errorf("failed to delete Node: %w", err)
 	}
 
@@ -445,6 +517,10 @@ func (h *HwMgrService) ReleaseNodePool(ctx context.Context, nodepool *hwmgmtv1al
 
 	for groupname := range allocations.Clouds[index].Nodegroups {
 		for _, nodename := range allocations.Clouds[index].Nodegroups[groupname] {
+			if err := h.DeleteBMCSecret(ctx, nodename); err != nil {
+				return fmt.Errorf("failed to delete bmc-secret for %s: %w", nodename, err)
+			}
+
 			if err := h.DeleteNode(ctx, nodename); err != nil {
 				return fmt.Errorf("failed to delete node %s: %w", nodename, err)
 			}
