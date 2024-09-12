@@ -4,6 +4,9 @@
 PROG=$(basename "$0")
 declare -A PROFILES=()
 
+USERNAME_BASE64=$(echo -n "admin" | base64)
+PASSWORD_BASE64=$(echo -n "mypass" | base64)
+
 function usage {
     cat <<EOF
 Usage: ${PROG} ...
@@ -58,7 +61,8 @@ function nodes {
         hwprofile: ${profile}
         bmc:
           address: "idrac-virtualmedia+https://${ip}/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-${nodename}"
+          username-base64: ${USERNAME_BASE64}
+          password-base64: ${PASSWORD_BASE64}
         bootMACAddress: "${mac}"
         hostname: "${nodename}.localhost"
 EOF

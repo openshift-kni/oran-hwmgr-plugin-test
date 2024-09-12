@@ -16,9 +16,12 @@ The `nodelist` configmap is also used by the Test Plugin to track node allocatio
 NodePool request, these are tracked in the `allocations` field in the configmap and a Node CR is created by the Test
 Plugin, setting the node properties as defined in the configmap.
 
+In addition, the Test Plugin will create a `Secret` in its own namespace for each node it allocates, named
+`<nodename>-bmc-secret`.
+
 When a NodePool CR is deleted, the Test Plugin is triggered by a finalizer it added to the CR. In processing the
-deletion, it will delete any Node CRs that have been allocated for the NodePool and free the node(s) in the `nodelist`
-configmap.
+deletion, it will delete any Node CRs that have been allocated for the NodePool and the corresponding bmc-secret, then
+free the node(s) in the `nodelist` configmap.
 
 ## Testing
 

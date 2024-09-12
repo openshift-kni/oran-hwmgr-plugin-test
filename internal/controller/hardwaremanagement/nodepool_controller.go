@@ -78,6 +78,7 @@ func requeueWithCustomInterval(interval time.Duration) ctrl.Result { // nolint:u
 //+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodes/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodes/finalizers,verbs=update
 //+kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;create;update;patch;watch
+//+kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;create;update;patch;watch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

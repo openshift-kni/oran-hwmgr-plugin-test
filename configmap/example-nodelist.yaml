@@ -13,55 +13,63 @@ data:
         hwprofile: profile-spr-dual-processor-128G
         bmc:
           address: "idrac-virtualmedia+https://192.168.1.0/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-dp-128g-0"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:01:00"
         hostname: "dummy-dp-128g-0.localhost"
       dummy-dp-128g-1:
         hwprofile: profile-spr-dual-processor-128G
         bmc:
           address: "idrac-virtualmedia+https://192.168.1.1/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-dp-128g-1"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:01:01"
         hostname: "dummy-dp-128g-1.localhost"
       dummy-dp-128g-2:
         hwprofile: profile-spr-dual-processor-128G
         bmc:
           address: "idrac-virtualmedia+https://192.168.1.2/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-dp-128g-2"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:01:02"
         hostname: "dummy-dp-128g-2.localhost"
       dummy-sp-64g-0:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.0/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-0"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:02:00"
         hostname: "dummy-sp-64g-0.localhost"
       dummy-sp-64g-1:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.1/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-1"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:02:01"
         hostname: "dummy-sp-64g-1.localhost"
       dummy-sp-64g-2:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.2/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-2"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:02:02"
         hostname: "dummy-sp-64g-2.localhost"
       dummy-sp-64g-3:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.3/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-3"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:02:03"
         hostname: "dummy-sp-64g-3.localhost"
       dummy-sp-64g-4:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.4/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-4"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
         bootMACAddress: "c6:b6:13:a0:02:04"
         hostname: "dummy-sp-64g-4.localhost"
