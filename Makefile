@@ -30,8 +30,7 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
 # oran.openshift.io/oran-hwmgr-plugin-test-bundle:$VERSION and oran.openshift.io/oran-hwmgr-plugin-test-catalog:$VERSION.
 IMAGE_NAME ?= oran-hwmgr-plugin-test
-REPO_OWNER ?= openshift-kni
-IMAGE_TAG_BASE ?= quay.io/$(REPO_OWNER)/$(IMAGE_NAME)
+IMAGE_TAG_BASE ?= quay.io/openshift-kni/$(IMAGE_NAME)
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
