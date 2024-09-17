@@ -39,8 +39,8 @@ To run the Test Plugin as a standalone without the O-Cloud Manager, the CRDs can
 The Test Plugin can be deployed to your cluster by first building the image and then running the `deploy` make target:
 
 ```console
-$ make REPO_OWNER=$USER VERSION=latest docker-build docker-push
-$ make REPO_OWNER=$USER VERSION=latest deploy
+$ make IMAGE_TAG_BASE=quay.io/$USER/oran-hwmgr-plugin-test VERSION=latest docker-build docker-push
+$ make IMAGE_TAG_BASE=quay.io/$USER/oran-hwmgr-plugin-test VERSION=latest deploy
 ```
 
 To watch the Test Plugin logs, run the following command:
