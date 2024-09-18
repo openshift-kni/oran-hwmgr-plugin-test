@@ -62,20 +62,20 @@ $ ./configmap/generator.sh \
 configmap/nodelist created
 
 $ oc create -f examples/np1.yaml
-nodepool.hardwaremanagement.oran.openshift.io/np1 created
+nodepool.o2ims-hardwaremanagement.oran.openshift.io/np1 created
 
-$ oc get nodepools.hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test np1 -o yaml
-apiVersion: hardwaremanagement.oran.openshift.io/v1alpha1
+$ oc get nodepools.o2ims-hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test np1 -o yaml
+apiVersion: o2ims-hardwaremanagement.oran.openshift.io/v1alpha1
 kind: NodePool
 metadata:
-  creationTimestamp: "2024-09-05T12:50:47Z"
+  creationTimestamp: "2024-09-18T17:29:00Z"
   finalizers:
   - oran-hwmgr-plugin-test.oran.openshift.io/nodepool-finalizer
   generation: 1
   name: np1
   namespace: oran-hwmgr-plugin-test
-  resourceVersion: "16208137"
-  uid: 5486b5e7-415b-4f63-a443-8cd88a32fef6
+  resourceVersion: "15851"
+  uid: 00be582c-3026-4421-bb92-b394415cff6b
 spec:
   cloudID: testcloud-1
   location: ottawa
@@ -89,7 +89,7 @@ spec:
   site: building-1
 status:
   conditions:
-  - lastTransitionTime: "2024-09-05T12:51:08Z"
+  - lastTransitionTime: "2024-09-18T17:29:21Z"
     message: Created
     reason: Completed
     status: "True"
@@ -98,16 +98,16 @@ status:
     nodeNames:
     - dummy-sp-64g-1
 
-$ oc get nodes.hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test dummy-sp-64g-1 -o yaml
-apiVersion: hardwaremanagement.oran.openshift.io/v1alpha1
+$ oc get nodes.o2ims-hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test dummy-sp-64g-1 -o yaml
+apiVersion: o2ims-hardwaremanagement.oran.openshift.io/v1alpha1
 kind: Node
 metadata:
-  creationTimestamp: "2024-09-05T12:50:58Z"
+  creationTimestamp: "2024-09-18T17:29:11Z"
   generation: 1
   name: dummy-sp-64g-1
   namespace: oran-hwmgr-plugin-test
-  resourceVersion: "16208107"
-  uid: 0838467c-f73e-4c5b-86cf-0083352243ce
+  resourceVersion: "15831"
+  uid: a0021f5a-34bc-4e5f-95c4-8372f4ce3fa3
 spec:
   groupName: master
   hwProfile: profile-spr-single-processor-64G
@@ -115,15 +115,18 @@ spec:
 status:
   bmc:
     address: idrac-virtualmedia+https://192.168.2.1/redfish/v1/Systems/System.Embedded.1
-    credentialsName: bmcSecret-dummy-sp-64g-1
-  bootMACAddress: c6:b6:13:a0:02:01
+    credentialsName: dummy-sp-64g-1-bmc-secret
   conditions:
-  - lastTransitionTime: "2024-09-05T12:50:58Z"
+  - lastTransitionTime: "2024-09-18T17:29:11Z"
     message: Provisioned
     reason: Completed
     status: "True"
     type: Provisioned
   hostname: dummy-sp-64g-1.localhost
+  interfaces:
+  - label: bootable-interface
+    macAddress: c6:b6:13:a0:02:01
+    name: eth0
 
 $ oc get configmap -n oran-hwmgr-plugin-test nodelist -o yaml
 apiVersion: v1
@@ -143,65 +146,97 @@ data:
         hwprofile: profile-spr-dual-processor-128G
         bmc:
           address: "idrac-virtualmedia+https://192.168.1.0/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-dp-128g-0"
-        bootMACAddress: "c6:b6:13:a0:01:00"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:01:00"
         hostname: "dummy-dp-128g-0.localhost"
       dummy-dp-128g-1:
         hwprofile: profile-spr-dual-processor-128G
         bmc:
           address: "idrac-virtualmedia+https://192.168.1.1/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-dp-128g-1"
-        bootMACAddress: "c6:b6:13:a0:01:01"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:01:01"
         hostname: "dummy-dp-128g-1.localhost"
       dummy-dp-128g-2:
         hwprofile: profile-spr-dual-processor-128G
         bmc:
           address: "idrac-virtualmedia+https://192.168.1.2/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-dp-128g-2"
-        bootMACAddress: "c6:b6:13:a0:01:02"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:01:02"
         hostname: "dummy-dp-128g-2.localhost"
       dummy-sp-64g-0:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.0/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-0"
-        bootMACAddress: "c6:b6:13:a0:02:00"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:02:00"
         hostname: "dummy-sp-64g-0.localhost"
       dummy-sp-64g-1:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.1/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-1"
-        bootMACAddress: "c6:b6:13:a0:02:01"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:02:01"
         hostname: "dummy-sp-64g-1.localhost"
       dummy-sp-64g-2:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.2/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-2"
-        bootMACAddress: "c6:b6:13:a0:02:02"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:02:02"
         hostname: "dummy-sp-64g-2.localhost"
       dummy-sp-64g-3:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.3/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-3"
-        bootMACAddress: "c6:b6:13:a0:02:03"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:02:03"
         hostname: "dummy-sp-64g-3.localhost"
       dummy-sp-64g-4:
         hwprofile: profile-spr-single-processor-64G
         bmc:
           address: "idrac-virtualmedia+https://192.168.2.4/redfish/v1/Systems/System.Embedded.1"
-          credentialsName: "bmcSecret-dummy-sp-64g-4"
-        bootMACAddress: "c6:b6:13:a0:02:04"
+          username-base64: YWRtaW4=
+          password-base64: bXlwYXNz
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "c6:b6:13:a0:02:04"
         hostname: "dummy-sp-64g-4.localhost"
 kind: ConfigMap
 metadata:
-  creationTimestamp: "2024-09-05T12:47:59Z"
+  creationTimestamp: "2024-09-18T17:28:38Z"
   name: nodelist
   namespace: oran-hwmgr-plugin-test
-  resourceVersion: "16208103"
-  uid: f0cc6238-15a1-40fd-abf1-4dcd0e32a531
+  resourceVersion: "15829"
+  uid: e6dfe91c-0713-46d2-b3e5-b883c3d8b8c5
 
 ```
 

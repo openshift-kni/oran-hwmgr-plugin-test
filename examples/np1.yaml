@@ -1,4 +1,4 @@
-apiVersion: hardwaremanagement.oran.openshift.io/v1alpha1
+apiVersion: o2ims-hardwaremanagement.oran.openshift.io/v1alpha1
 kind: NodePool
 metadata:
   name: np1

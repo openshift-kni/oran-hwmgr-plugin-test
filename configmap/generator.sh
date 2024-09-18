@@ -63,18 +63,15 @@ function nodes {
           address: "idrac-virtualmedia+https://${ip}/redfish/v1/Systems/System.Embedded.1"
           username-base64: ${USERNAME_BASE64}
           password-base64: ${PASSWORD_BASE64}
-        bootMACAddress: "${mac}"
+        interfaces:
+          - name: eth0
+            label: bootable-interface
+            macAddress: "${mac}"
         hostname: "${nodename}.localhost"
 EOF
         done
     done
 }
-
-#        bmc: |
-#          {
-#            "address": "idrac-virtualmedia+https://${ip}/redfish/v1/Systems/System.Embedded.1",
-#            "credentialsName": "bmcSecret-${nodename}"
-#          }
 
 #
 # Process cmdline arguments

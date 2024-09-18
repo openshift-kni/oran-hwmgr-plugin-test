@@ -88,8 +88,8 @@ github.com/onsi/ginkgo/v2 v2.11.0 h1:WgqUCUt/lT6yXoQ8Wef0fsNn5cAuMK7+KT9UFRz2tcU
 github.com/onsi/ginkgo/v2 v2.11.0/go.mod h1:ZhrRA5XmEE3x3rhlzamx/JJvujdZoJ2uvgI7kR0iZvM=
 github.com/onsi/gomega v1.27.10 h1:naR28SdDFlqrG6kScpT8VWpu1xWY5nJRCF3XaYyBjhI=
 github.com/onsi/gomega v1.27.10/go.mod h1:RsS8tutOdbdgzbPtzzATp12yT7kM5I5aElG3evPbQ0M=
-github.com/openshift-kni/oran-o2ims/api/hardwaremanagement v0.0.0-20240903165820-cebcd5f0272a h1:ntdRx64DfNZkTriFIwXDoWMHiu/i5AvP/ekaJEQ3I24=
-github.com/openshift-kni/oran-o2ims/api/hardwaremanagement v0.0.0-20240903165820-cebcd5f0272a/go.mod h1:owBMlvtNeWmBGKEdusRCmtIxdxBIFinYlCpaVRfYSoo=
+github.com/openshift-kni/oran-o2ims/api/hardwaremanagement v0.0.0-20240918195443-604ab4391d40 h1:cJZ0uejWtsli0QVEJvS7RKTS1rGH06LtV/PwOtZge7U=
+github.com/openshift-kni/oran-o2ims/api/hardwaremanagement v0.0.0-20240918195443-604ab4391d40/go.mod h1:owBMlvtNeWmBGKEdusRCmtIxdxBIFinYlCpaVRfYSoo=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
