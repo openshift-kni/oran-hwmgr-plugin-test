@@ -71,12 +71,12 @@ func requeueWithCustomInterval(interval time.Duration) ctrl.Result { // nolint:u
 	return ctrl.Result{RequeueAfter: interval}
 }
 
-//+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodepools,verbs=get;list;watch;update;patch
-//+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodepools/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodepools/finalizers,verbs=update
-//+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodes,verbs=get;create;list;watch;update;patch;delete
-//+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodes/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=hardwaremanagement.oran.openshift.io,resources=nodes/finalizers,verbs=update
+//+kubebuilder:rbac:groups=o2ims-hardwaremanagement.oran.openshift.io,resources=nodepools,verbs=get;list;watch;update;patch
+//+kubebuilder:rbac:groups=o2ims-hardwaremanagement.oran.openshift.io,resources=nodepools/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=o2ims-hardwaremanagement.oran.openshift.io,resources=nodepools/finalizers,verbs=update
+//+kubebuilder:rbac:groups=o2ims-hardwaremanagement.oran.openshift.io,resources=nodes,verbs=get;create;list;watch;update;patch;delete
+//+kubebuilder:rbac:groups=o2ims-hardwaremanagement.oran.openshift.io,resources=nodes/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=o2ims-hardwaremanagement.oran.openshift.io,resources=nodes/finalizers,verbs=update
 //+kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;create;update;patch;watch
 //+kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;create;update;patch;watch;delete
 

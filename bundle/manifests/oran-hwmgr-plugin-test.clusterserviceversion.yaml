@@ -44,7 +44,7 @@ spec:
           - update
           - watch
         - apiGroups:
-          - hardwaremanagement.oran.openshift.io
+          - o2ims-hardwaremanagement.oran.openshift.io
           resources:
           - nodepools
           verbs:
@@ -54,13 +54,13 @@ spec:
           - update
           - watch
         - apiGroups:
-          - hardwaremanagement.oran.openshift.io
+          - o2ims-hardwaremanagement.oran.openshift.io
           resources:
           - nodepools/finalizers
           verbs:
           - update
         - apiGroups:
-          - hardwaremanagement.oran.openshift.io
+          - o2ims-hardwaremanagement.oran.openshift.io
           resources:
           - nodepools/status
           verbs:
@@ -68,7 +68,7 @@ spec:
           - patch
           - update
         - apiGroups:
-          - hardwaremanagement.oran.openshift.io
+          - o2ims-hardwaremanagement.oran.openshift.io
           resources:
           - nodes
           verbs:
@@ -80,13 +80,13 @@ spec:
           - update
           - watch
         - apiGroups:
-          - hardwaremanagement.oran.openshift.io
+          - o2ims-hardwaremanagement.oran.openshift.io
           resources:
           - nodes/finalizers
           verbs:
           - update
         - apiGroups:
-          - hardwaremanagement.oran.openshift.io
+          - o2ims-hardwaremanagement.oran.openshift.io
           resources:
           - nodes/status
           verbs:

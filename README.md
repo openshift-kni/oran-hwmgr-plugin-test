@@ -62,10 +62,10 @@ $ ./configmap/generator.sh \
 configmap/nodelist created
 
 $ oc create -f examples/np1.yaml
-nodepool.hardwaremanagement.oran.openshift.io/np1 created
+nodepool.o2ims-hardwaremanagement.oran.openshift.io/np1 created
 
-$ oc get nodepools.hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test np1 -o yaml
-apiVersion: hardwaremanagement.oran.openshift.io/v1alpha1
+$ oc get nodepools.o2ims-hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test np1 -o yaml
+apiVersion: o2ims-hardwaremanagement.oran.openshift.io/v1alpha1
 kind: NodePool
 metadata:
   creationTimestamp: "2024-09-18T17:29:00Z"
@@ -98,8 +98,8 @@ status:
     nodeNames:
     - dummy-sp-64g-1
 
-$ oc get nodes.hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test dummy-sp-64g-1 -o yaml
-apiVersion: hardwaremanagement.oran.openshift.io/v1alpha1
+$ oc get nodes.o2ims-hardwaremanagement.oran.openshift.io -n oran-hwmgr-plugin-test dummy-sp-64g-1 -o yaml
+apiVersion: o2ims-hardwaremanagement.oran.openshift.io/v1alpha1
 kind: Node
 metadata:
   creationTimestamp: "2024-09-18T17:29:11Z"
