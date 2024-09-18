@@ -18,10 +18,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type Interface struct {
+	Name  string `json:"name"`  // The name of the network interface (e.g., eth0, ens33)
+	Label string `json:"label"` // The label of the interface
+	// +kubebuilder:validation:Pattern=`^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$`
+	MACAddress string `json:"macAddress"` // The MAC address of the interface
+}
+
 // NodeSpec describes a node presents a hardware server
 type NodeSpec struct {
-	NodePool  string `json:"nodePool"`
+	// NodePool
+	//+operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Node Pool",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	NodePool string `json:"nodePool"`
+	// GroupName
+	//+operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Group Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
 	GroupName string `json:"groupName"`
+	// HwProfile
+	//+operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Hardware Profile",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
 	HwProfile string `json:"hwProfile"`
 }
 
@@ -39,7 +52,7 @@ type BMC struct {
 type NodeStatus struct {
 	BMC *BMC `json:"bmc,omitempty"`
 
-	BootMACAddress string `json:"bootMACAddress,omitempty"`
+	Interfaces []*Interface `json:"interfaces,omitempty"`
 
 	Hostname string `json:"hostname,omitempty"`
 
@@ -52,6 +65,7 @@ type NodeStatus struct {
 //
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +operator-sdk:csv:customresourcedefinitions:displayName="ORAN O2IMS Cluster Request",resources={{Namespace, v1}}
 type Node struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

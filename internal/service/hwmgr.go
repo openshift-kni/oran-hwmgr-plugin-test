@@ -27,10 +27,10 @@ type cmBmcInfo struct {
 }
 
 type cmNodeInfo struct {
-	HwProfile      string     `json:"hwprofile" yaml:"hwprofile"`
-	BMC            *cmBmcInfo `json:"bmc,omitempty"`
-	BootMACAddress string     `json:"bootMACAddress,omitempty"`
-	Hostname       string     `json:"hostname,omitempty"`
+	HwProfile  string                      `json:"hwprofile" yaml:"hwprofile"`
+	BMC        *cmBmcInfo                  `json:"bmc,omitempty"`
+	Interfaces []*hwmgmtv1alpha1.Interface `json:"interfaces,omitempty"`
+	Hostname   string                      `json:"hostname,omitempty"`
 }
 
 type cmResources struct {
@@ -351,8 +351,8 @@ func (h *HwMgrService) UpdateNodeStatus(ctx context.Context, nodename string, in
 		Address:         info.BMC.Address,
 		CredentialsName: bmcSecretName(nodename),
 	}
-	node.Status.BootMACAddress = info.BootMACAddress
 	node.Status.Hostname = info.Hostname
+	node.Status.Interfaces = info.Interfaces
 
 	utils.SetStatusCondition(&node.Status.Conditions,
 		hwmgmtv1alpha1.Provisioned,
